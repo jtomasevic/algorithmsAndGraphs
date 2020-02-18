@@ -1,6 +1,7 @@
 /* eslint-disable arrow-body-style */
 import React from 'react';
 import { simpleDemo } from '../graphs/demo';
+import { insertBstDemo } from '../bst/demo';
 
 const App = () => {
     return (
@@ -9,7 +10,10 @@ const App = () => {
                 <h1>Algorithmes and graphs</h1>
             </div>
             <div>
-                <button onClick={simpleDemo}>Press and check console</button>
+                <button onClick={simpleDemo} >(Press and check console)</button>
+            </div>
+            <div>
+                <button onClick={insertBstDemo}>BST (Press and check console)</button>
             </div>
         </>
     );

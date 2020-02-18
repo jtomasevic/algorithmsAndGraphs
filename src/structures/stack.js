@@ -13,4 +13,8 @@ export default class Stack<T> {
         const value:T = this.data.pop();
         return value;
     }
+
+    isEmpty() {
+        return !this.queue.length > 0;
+    }
 }

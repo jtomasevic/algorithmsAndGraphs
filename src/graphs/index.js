@@ -14,7 +14,7 @@ export class Graph<T> {
 export class SimpleGraph<T> extends Graph<T> {
     constructor() {
         super();
-        this.isBidirected = false;
+        this.isBidirected = true;
         this.isWeighted = false;
         this.map = {};
         // this.addEdge = this.addEdge.bind(this);
@@ -32,6 +32,26 @@ export class SimpleGraph<T> extends Graph<T> {
             this.addVertex(desination);
         }
         this.map[source].push(desination);
+        if (this.isBidirected) {
+            this.map[desination].push(source);
+        }
+    }
+
+    visitNodes(start: T) {
+        const queue = [];
+        const visited = {};
+        visited[start] = true;
+        queue.push(start);
+        while (queue.length > 0) {
+            const element = queue.shift();
+            console.log('->', element);
+            this.map[element].forEach(n => {
+                if (!visited[n]) {
+                    visited[n] = true;
+                    queue.push(n);
+                }
+            });
+        }
     }
 
     print() {

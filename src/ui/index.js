@@ -3,7 +3,9 @@
 import React from 'react';
 import { simpleDemo, MatrixInit } from '../graphs/demo';
 import { insertBstDemo } from '../bst/demo';
-import { ifUnique, ifUnique2, isItPermutation, URLifyStr, checkForPalindrom, stringCompression } from '../arrayAndLists';
+import { ifUnique, ifUnique2, isItPermutation, URLifyStr, checkForPalindrom,
+    // eslint-disable-next-line no-unused-vars
+    stringCompression, printMatrix } from '../arrayAndLists';
 
 const App = () => {
     const checkIfUnique = () => {
@@ -35,6 +37,20 @@ const App = () => {
         const result = stringCompression(document.getElementById('forCompression').value);
         document.getElementById('compresedString').innerHTML = result;
     };
+    const createMatrix = () => {
+        const matrixStr = document.getElementById('matrixInput').value;
+        const rows = matrixStr.split(';');
+        console.log(rows);
+        const matrix = [];
+        for (let i = 0; i < rows.length; i++) {
+            const row = rows[i].split(',');
+            matrix.push([]);
+            for (let j = 0; j < row.length; j++) {
+                matrix[i][j] = row[j];
+            }
+        }
+        console.log(matrix);
+    };
     return (
         <>
             <div>
@@ -47,7 +63,7 @@ const App = () => {
                 <button onClick={insertBstDemo}>BST (Press and check console)</button>
             </div>
             <div>
-                <button onClick={MatrixInit} >Init matrix grapha (Press and check console)</button>
+                <button onClick={MatrixInit} >Init matrix graph (Press and check console)</button>
             </div>
             <div>
                 <h1>Arrays</h1>
@@ -84,8 +100,18 @@ const App = () => {
                 <button onClick={compreseStr}>Compress</button>
                 <br/>
                 <label id='compresedString'/>
-
+                <h3>Matrix</h3>
+                <div>
+                    Enter matrix, each column separate with ; and each memeber in the row with ,
+                </div>
+                <input id='matrixInput' style={ { width: 300 } } />
+                <button onClick={createMatrix}>Print matrix</button>
+                <br/>
+                <div id='matrix'>  </div>
             </div>
+            <br/>
+            <br/>
+            <br/>
         </>
     );
 };

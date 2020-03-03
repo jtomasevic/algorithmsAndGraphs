@@ -13,16 +13,18 @@ export class Graph<T> {
 }
 
 export class SimpleGraph<T> extends Graph<T> {
-    constructor() {
+    constructor(isDirected) {
         super();
-        this.isBidirected = false;
+        this.isDirected = isDirected;
         this.isWeighted = false;
         this.map = {};
+        this.vertices = [];
         // this.addEdge = this.addEdge.bind(this);
     }
 
     addVertex(value: T) {
         this.map[value] = [];
+        this.vertices.push(value);
     }
 
     addEdge(source: T, desination: T) {
@@ -33,9 +35,59 @@ export class SimpleGraph<T> extends Graph<T> {
             this.addVertex(desination);
         }
         this.map[source].push(desination);
-        if (this.isBidirected) {
+        if (this.isDirected === false) {
             this.map[desination].push(source);
         }
+    }
+
+    findConnectedComponents() {
+        // eslint-disable-next-line prefer-const
+        let visited = {};
+        const labels = [];
+        for (let i = 0; i < this.vertices.length; i++) {
+            const el = this.vertices[i];
+            if (!visited[el]) {
+                const forLabel = this.visitNodesDFS(this.vertices[i], visited, []);
+                labels.push(forLabel);
+            }
+        }
+        return labels;
+    }
+
+    visitNodesDFS(start: T, visited, result) {
+        visited[start] = true;
+        // console.log('->', start);
+        result.push(start);
+        if (this.map[start]) {
+            this.map[start].forEach(n => {
+                if (!visited[n]) {
+                    this.visitNodesDFS(n, visited, result);
+                }
+            });
+        }
+        return result;
+    }
+
+    previsitDFS(start: T, visited, result) {
+        visited[start] = true;
+        result.push(start);
+        this.map[start].forEach(n => {
+            if (!visited[n]) {
+                this.previsitDFS(n, visited, result);
+            }
+        });
+        return result;
+    }
+
+    postvisitDFS(start: T, visited, result) {
+        visited[start] = true;
+        this.map[start].forEach(n => {
+            if (!visited[n]) {
+                this.postvisitDFS(n, visited, result);
+            }
+        });
+        result.push(start);
+        return result;
     }
 
     visitNodes(start: T) {
@@ -43,16 +95,64 @@ export class SimpleGraph<T> extends Graph<T> {
         const visited = {};
         visited[start] = true;
         queue.push(start);
+        const result = [];
         while (queue.length > 0) {
             const element = queue.shift();
-            console.log('->', element);
-            this.map[element].forEach(n => {
-                if (!visited[n]) {
-                    visited[n] = true;
-                    queue.push(n);
-                }
-            });
+            result.push(element);
+            if (this.map[element]) {
+                this.map[element].forEach(n => {
+                    if (!visited[n]) {
+                        visited[n] = true;
+                        queue.push(n);
+                    }
+                });
+            }
         }
+        return result;
+    }
+
+    removeFromGraph(value: string) {
+        for (let i = 0; i < this.vertices.length; i++) {
+            const node = this.vertices[i];
+            console.log('invesgating node to delete from node:', node);
+            if (this.map[node]) {
+                for (let ei = 0; ei < this.map[node].length; ei++) {
+                    console.log('ask to delete node');
+                    if (this.map[node][ei] === value) {
+                        const removed = this.map[node].splice(ei, 1);
+                        console.log('remove edge from', removed[0]);
+                    }
+                }
+            }
+        }
+        for (let i = this.vertices.length - 1; i >= 0; i--) {
+            if (this.vertices[i] === value) {
+                const deleted = this.vertices.splice(i, 1);
+                console.log('delete NODE from VERTICIES', deleted);
+            }
+        }
+        delete this.map[value];
+        console.log('after deleting graph is:', this.map, this.vertices);
+        return value;
+    }
+
+    topologicalSort() {
+        const stack = [];
+        while (this.vertices.length > 0) {
+            const sink = this.findSink();
+            stack.push(sink);
+            this.removeFromGraph(sink);
+        }
+        return stack.reverse();
+    }
+
+    findSink() {
+        let startFrom = this.vertices[0];
+        while (this.map[startFrom] && this.map[startFrom].length > 0) {
+            // does not has verticies. if yes it will be non-empty array
+            startFrom = this.map[startFrom][0];
+        }
+        return startFrom;
     }
 
     calculateDistance(start: T) {
